@@ -1,36 +1,38 @@
 #include <stdio.h>
+#define BIT_NINE 256
+#define BIAS 127
+#define MASK_31_BITS 8388607
 
 int main(void)
 {
 
-    float numero = 79.1254;
+    float number = 2.0;
 
-    unsigned int conversao = *(int *)&numero;
-    unsigned int sinal = conversao >> 31;
+    unsigned int binary = *(int *)&number;
+    unsigned int signbit = binary >> 31;
 
-    signed int expoente = (signed int)(((conversao >> 23) - 256 * sinal) - 127);
+    signed int exponent = (signed int)(((binary >> 23) - BIT_NINE * signbit) - BIAS);
 
-    unsigned int mask = 8388607;
-    unsigned int mantissa = (conversao & mask);
+    unsigned int mantissa = (binary & MASK_31_BITS);
     int counter = 2;
-    double soma = 0;
-    int posicao = 4194304;
+    double decimalSum = 0;
+    int currentBit = 4194304;
     for (int i = 1; i <= 23; ++i)
     {
-        if (mantissa / posicao)
+        if (mantissa / currentBit)
         {
-            soma += (1 / (double)counter);
-            mantissa -= posicao;
+            decimalSum += (1 / (double)counter);
+            mantissa -= currentBit;
         }
         counter *= 2;
 
-        posicao = posicao >> 1;
+        currentBit = currentBit >> 1;
     }
-    soma += 1;
-    printf("%f é representado em notação científica binária como:\n", numero);
-    if (sinal)
+    decimalSum += 1;
+    printf("%f is represented in binary scientific notation as:\n", number);
+    if (signbit)
         printf("-");
-    printf("%.23f x 2^%d\n", soma, expoente);
+    printf("%.23f x 2^%d\n", decimalSum, exponent);
 
     return 0;
 }
